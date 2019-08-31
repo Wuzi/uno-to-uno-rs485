@@ -15,12 +15,24 @@
 #define RS485_TRANSMIT    HIGH
 #define RS485_RECEIVE     LOW
 
-// Codes
-#define TURN_LED_ON   'a'
-#define TURN_LED_OFF  'b'
-
 // Create the SoftwareSerial to make the connection with the RS485 module
 SoftwareSerial RS485Serial(RS485_RX_PIN, RS485_TX_PIN);
+
+// Bomb pins
+#define MAX_BOMB_PINS 4
+const int BOMB_PINS[MAX_BOMB_PINS] = {4, 5, 6, 7};
+
+// Bomb codes
+// Examples:
+// BOMB_CODES[0][0] will return the code for: bomb 1 is ON
+// BOMB_CODES[0][1] will return the code for: bomb 1 is OFF
+const char BOMB_CODES[MAX_BOMB_PINS][2] = {
+// ON   OFF
+  {'a', 'b'},
+  {'c', 'd'},
+  {'e', 'f'},
+  {'g', 'h'}
+};
 
 void setup()
 {
@@ -30,10 +42,13 @@ void setup()
   // Set the transmission pin to output
   pinMode(SERIAL_TX_CONTROL_PIN, OUTPUT);
 
+  // Set bomb pins
+  for (int i = 0; i < MAX_BOMB_PINS; i++) {
+    pinMode(BOMB_PINS[i], INPUT_PULLUP);
+  }
+
   // Start the RS485 module serial
   RS485Serial.begin(4800);
-  pinMode(A0, INPUT_PULLUP);
-
   delay(100);
 
   // Set the transmission pin to as transmitter
@@ -41,10 +56,12 @@ void setup()
 }
 
 // Send codes to the receiver every 10 seconds
-bool blink = false;
 void loop()
 {
-  blink = !blink;
-  RS485Serial.print(blink ? TURN_LED_ON : TURN_LED_OFF);
+  // Send bomb info to receiver
+  for (int i = 0; i < MAX_BOMB_PINS; i++) {
+    int state = digitalRead(BOMB_PINS[i]);
+    RS485Serial.print(BOMB_CODES[i][state]);
+  }
   delay(10000);
 }
