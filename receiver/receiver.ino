@@ -18,20 +18,25 @@
 // Create the SoftwareSerial to make the connection with the RS485 module
 SoftwareSerial RS485Serial(RS485_RX_PIN, RS485_TX_PIN);
 
-// Bomb pins
-#define MAX_BOMB_PINS 4
-const int BOMB_PINS[MAX_BOMB_PINS] = {4, 5, 6, 7};
+// Pins
+#define MAX_PINS 9
+const int PINS[MAX_PINS] = {2, 4, 5, 6, 7, 8, 9, 12, 13};
 
-// Bomb codes
+// Codes
 // Examples:
-// BOMB_CODES[0][0] will return the code for: bomb 1 is ON
-// BOMB_CODES[0][1] will return the code for: bomb 1 is OFF
-const char BOMB_CODES[MAX_BOMB_PINS][2] = {
+// CODES[0][0] will return the code for: PIN[0] is ON
+// CODES[0][1] will return the code for: PIN[0] is OFF
+const char CODES[MAX_PINS][2] = {
 // ON   OFF
   {'a', 'b'},
   {'c', 'd'},
   {'e', 'f'},
-  {'g', 'h'}
+  {'g', 'h'},
+  {'i', 'j'},
+  {'k', 'l'},
+  {'m', 'n'},
+  {'o', 'p'},
+  {'q', 'r'}
 };
 
 void setup()
@@ -42,9 +47,9 @@ void setup()
   // Set the transmission pin to output
   pinMode(SERIAL_TX_CONTROL_PIN, OUTPUT);
 
-  // Set bomb pins
-  for (int i = 0; i < MAX_BOMB_PINS; i++) {
-    pinMode(BOMB_PINS[i], OUTPUT);
+  // Set pins mode
+  for (int i = 0; i < MAX_PINS; i++) {
+    pinMode(PINS[i], OUTPUT);
   }
 
   // Start the RS485 module serial
@@ -64,10 +69,10 @@ void loop()
     {
       // Read data
       char code = RS485Serial.read();
-      for (int i = 0; i < MAX_BOMB_PINS; i++) {
+      for (int i = 0; i < MAX_PINS; i++) {
         for (int j = 0; j < 2; j++) {
-          if (code == BOMB_CODES[i][j]) {
-            digitalWrite(BOMB_PINS[i], j);
+          if (code == CODES[i][j]) {
+            digitalWrite(PINS[i], j);
           }
         }
       }
